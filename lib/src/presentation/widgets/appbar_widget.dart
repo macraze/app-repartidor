@@ -6,26 +6,30 @@ class AppbarWidget extends StatelessWidget with PreferredSizeWidget {
   const AppbarWidget({
     Key? key,
     required this.title,
-    this.hasLeading = false,
+    required this.hasCustomLeading,
+    this.leading,
     this.centerTitle = true,
     this.elevation = 0,
     this.backgroundColor = AppColors.primary,
     this.actions,
+    this.leadingWidth,
   }) : super(key: key);
 
   final String title;
-  final bool? hasLeading;
+  final Widget? leading;
+  final bool hasCustomLeading;
   final bool? centerTitle;
   final double? elevation;
   final Color? backgroundColor;
   final List<Widget>? actions;
+  final double? leadingWidth;
 
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
       iconTheme: const IconThemeData(color: Colors.white),
-      leading: !hasLeading!
-          ? const ContainerWidget()
+      leading: hasCustomLeading
+          ? leading
           : IconWidget(
               type: Type.icon,
               iconName: Icons.keyboard_arrow_left_rounded,
@@ -39,6 +43,7 @@ class AppbarWidget extends StatelessWidget with PreferredSizeWidget {
       elevation: elevation,
       backgroundColor: backgroundColor,
       actions: actions,
+      leadingWidth: leadingWidth,
     );
   }
 

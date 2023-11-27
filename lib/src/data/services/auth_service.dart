@@ -1,12 +1,9 @@
 import 'dart:convert';
 
 import 'package:app_repartidor/src/data/api.dart';
-import 'package:app_repartidor/src/data/environment.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 
 class AuthService {
-  final String api = Environment.urlApi;
-
   Future<String?> login(String username, String password) async {
     final Map<String, dynamic> authData = {
       'nomusuario': username,
@@ -19,7 +16,7 @@ class AuthService {
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (decodedResp.containsKey('token')) {
         LocalStorage.token = decodedResp['token'];
-        LocalStorage.user = json.encode(decodedResp['user']);
+        LocalStorage.user = json.encode(decodedResp['usuario']);
         return null;
       } else if (decodedResp.containsKey('data')) {
         return decodedResp['data'];

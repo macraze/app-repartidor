@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
@@ -18,7 +19,7 @@ class IconWidget extends StatelessWidget {
     this.iconName,
     this.text = '',
     this.onPressed,
-    this.color,
+    this.color = Colors.white,
     this.size = 10,
     this.fontSize = 10,
     // this.height = 10,

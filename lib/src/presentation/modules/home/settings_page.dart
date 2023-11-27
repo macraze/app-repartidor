@@ -1,7 +1,9 @@
+import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -84,7 +86,9 @@ class SettingsPage extends StatelessWidget {
                   ButtonWidget(
                     margin: const EdgeInsets.only(top: 30),
                     text: labelButton,
-                    onPressed: () {},
+                    onPressed: () {
+                      GoRouter.of(context).pushNamed(Routes.orderWait);
+                    },
                     color: AppColors.primary,
                   ),
                 ],

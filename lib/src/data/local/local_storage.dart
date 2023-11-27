@@ -5,6 +5,7 @@ class LocalStorage {
 
   static String _token = '';
   static String _user = '';
+  static bool _online = true;
 
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -31,5 +32,19 @@ class LocalStorage {
   static set user(String user) {
     _user = user;
     _prefs.setString('user', user);
+  }
+
+  static void removeUser() {
+    _user = '';
+    _prefs.remove('user');
+  }
+
+  static bool get online {
+    return _prefs.getBool('online') ?? _online;
+  }
+
+  static set online(bool value) {
+    _online = value;
+    _prefs.setBool('online', value);
   }
 }

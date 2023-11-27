@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 
+import '../styles/app_colors.dart';
+
 class ButtonWidget extends StatelessWidget {
   const ButtonWidget({
     Key? key,
     required this.text,
     required this.onPressed,
-    this.color,
+    this.color = AppColors.secondary,
     this.decoration,
     this.colorDisabled = const Color.fromARGB(74, 193, 193, 193),
     this.padding,
