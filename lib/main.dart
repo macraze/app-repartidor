@@ -1,7 +1,7 @@
 import 'package:app_repartidor/src/data/environment.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
-import 'package:app_repartidor/src/presentation/providers/auth_provider.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,7 @@ class AppState extends StatelessWidget {
   Widget build(BuildContext context) {
     List<SingleChildWidget> providers = [
       ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ChangeNotifierProvider(create: (_) => OrderProvider()),
     ];
 
     return MultiProvider(

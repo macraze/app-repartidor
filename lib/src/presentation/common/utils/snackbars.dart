@@ -1,3 +1,4 @@
+import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class Snackbars {
 
   static showSnackbarSuccess(String message) {
     final snackBar = SnackBar(
-      backgroundColor: Colors.green.withOpacity(0.9),
+      backgroundColor: AppColors.primary,
       content: TextWidget(
         text: message,
         fontSize: 13,
