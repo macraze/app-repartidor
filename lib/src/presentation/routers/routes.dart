@@ -3,5 +3,6 @@ class Routes {
 
   static const splash = 'splash';
   static const login = 'login';
-  static const orderWait = 'orderWait';
+  static const ordersPending = 'ordersPending';
+  static const ordersAccepted = 'ordersAccepted';
 }
