@@ -1,3 +1,5 @@
+import 'package:app_repartidor/src/data/local/local_storage.dart';
+import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,10 +45,30 @@ mixin RouterMixin on State<MyApp> {
             builder: (context, state) => const SettingsPage(),
           ),
           GoRoute(
-            path: '/orderWait',
-            name: Routes.orderWait,
-            builder: (context, state) => OrderWaitPage(),
+            path: '/ordersPending',
+            name: Routes.ordersPending,
+            builder: (context, state) {
+              final User user = userFromJson(LocalStorage.user);
+
+              if (user.idsedeSuscrito == null) {
+                return OrderWaitPage();
+              } else {
+                return const ListOrdersPendingDeliveryLocalPage();
+              }
+            },
           ),
+          GoRoute(
+              path: '/ordersAccepted',
+              name: Routes.ordersAccepted,
+              builder: (context, state) {
+                final User user = userFromJson(LocalStorage.user);
+
+                if (user.idsedeSuscrito == null) {
+                  return OrderWaitPage();
+                } else {
+                  return const ListOrdersAcceptedDeliveryLocalPage();
+                }
+              }),
         ],
         redirect: (context, state) {
           final authProvider =

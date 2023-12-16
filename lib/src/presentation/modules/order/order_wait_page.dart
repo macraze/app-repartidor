@@ -38,29 +38,13 @@ class OrderWaitPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          _buildAppbar(user, orderProvider, context, title),
+          AppbarWidget(
+            actions: _buildSwitch(orderProvider, context, user, title),
+          ),
           Expanded(
             child: _buildBody(size),
           ),
         ],
-      ),
-    );
-  }
-
-  ContainerWidget _buildAppbar(User user, OrderProvider orderProvider,
-      BuildContext context, String title) {
-    return ContainerWidget(
-      decoration: const BoxDecoration(color: AppColors.primary),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildUserInfo(user),
-            _buildSwitch(orderProvider, context, user, title),
-          ],
-        ),
       ),
     );
   }
@@ -171,7 +155,7 @@ class OrderWaitPage extends StatelessWidget {
 
     if (orderProvider.isLoadingOnline) return;
 
-    final String? errorMessage = await orderProvider.connectOrder(
+    final String? errorMessage = await orderProvider.connectOrderProvider(
         idRepartidor: user.idrepartidor,
         mount: orderProvider.mount,
         isOnline: value == true ? 1 : 0);
@@ -183,14 +167,6 @@ class OrderWaitPage extends StatelessWidget {
       Snackbars.showSnackbarSuccess(
           'El estado del repartidor ha sido actualizado.');
     }
-  }
-
-  TextWidget _buildUserInfo(User user) {
-    return TextWidget(
-      text: user.nombre ?? '',
-      fontSize: 13,
-      maxLines: 2,
-    );
   }
 
   ContainerWidget _buildBody(Size size) {

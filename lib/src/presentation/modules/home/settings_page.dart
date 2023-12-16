@@ -87,7 +87,7 @@ class SettingsPage extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 30),
                     text: labelButton,
                     onPressed: () {
-                      GoRouter.of(context).pushNamed(Routes.orderWait);
+                      GoRouter.of(context).pushNamed(Routes.ordersPending);
                     },
                     color: AppColors.primary,
                   ),

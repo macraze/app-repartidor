@@ -1,0 +1,1 @@
+export 'package:app_repartidor/src/domain/entities/cliente_notificar_entity.dart';

@@ -15,7 +15,7 @@ class User {
   String? ciudad;
   String? usuario;
   String? pass;
-  dynamic idsedeSuscrito;
+  int? idsedeSuscrito;
   String? telefono;
 
   User({

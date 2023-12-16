@@ -1,52 +1,40 @@
+import 'package:app_repartidor/src/data/local/local_storage.dart';
+import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
-class AppbarWidget extends StatelessWidget with PreferredSizeWidget {
-  const AppbarWidget({
-    Key? key,
-    required this.title,
-    required this.hasCustomLeading,
-    this.leading,
-    this.centerTitle = true,
-    this.elevation = 0,
-    this.backgroundColor = AppColors.primary,
-    this.actions,
-    this.leadingWidth,
-  }) : super(key: key);
+class AppbarWidget extends StatelessWidget {
+  const AppbarWidget({super.key, this.actions});
 
-  final String title;
-  final Widget? leading;
-  final bool hasCustomLeading;
-  final bool? centerTitle;
-  final double? elevation;
-  final Color? backgroundColor;
-  final List<Widget>? actions;
-  final double? leadingWidth;
+  final Widget? actions;
 
   @override
-  PreferredSizeWidget build(BuildContext context) {
-    return AppBar(
-      iconTheme: const IconThemeData(color: Colors.white),
-      leading: hasCustomLeading
-          ? leading
-          : IconWidget(
-              type: Type.icon,
-              iconName: Icons.keyboard_arrow_left_rounded,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-      title: TextWidget(
-        text: title,
-        fontSize: 15,
+  Widget build(BuildContext context) {
+    final User user = userFromJson(LocalStorage.user);
+
+    return ContainerWidget(
+      decoration: const BoxDecoration(color: AppColors.primary),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      constraints: const BoxConstraints(minHeight: 96),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildUserInfo(user),
+            actions ?? const ContainerWidget(),
+          ],
+        ),
       ),
-      centerTitle: centerTitle,
-      elevation: elevation,
-      backgroundColor: backgroundColor,
-      actions: actions,
-      leadingWidth: leadingWidth,
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  TextWidget _buildUserInfo(User user) {
+    return TextWidget(
+      text: user.nombre ?? '',
+      fontSize: 13,
+      maxLines: 2,
+    );
+  }
 }

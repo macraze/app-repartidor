@@ -22,6 +22,7 @@ class AppState extends StatelessWidget {
     List<SingleChildWidget> providers = [
       ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => OrderProvider()),
+      ChangeNotifierProvider(create: (_) => SocketProvider(), lazy: false),
     ];
 
     return MultiProvider(
@@ -41,6 +42,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with RouterMixin {
   @override
   Widget build(BuildContext context) {
+    // final socket = Provider.of<SocketProvider>(context);
+
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
