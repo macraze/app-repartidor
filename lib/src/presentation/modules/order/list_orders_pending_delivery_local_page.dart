@@ -183,9 +183,9 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
     if (response != null) {
       Snackbars.showSnackbarError(response);
     } else {
-      Snackbars.showSnackbarSuccess('Los pedidos han sido enviado con éxito.');
+      Snackbars.showSnackbarSuccess('Los pedidos han sido enviado con éxito!');
       GoRouter.of(context).pushNamed(Routes.ordersAccepted);
-      log(list);
+      // log(list);
     }
   }
 }

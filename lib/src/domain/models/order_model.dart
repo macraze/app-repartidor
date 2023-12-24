@@ -43,6 +43,7 @@ class Order {
   int? despachado;
   String? subtotalesTachados;
   int? estado;
+  int? pasoVa;
   String? jsonDatosDelivery;
   int? isFromClientPwa;
   String? pwaDeliveryStatus;
@@ -122,6 +123,7 @@ class Order {
     this.despachado,
     this.subtotalesTachados,
     this.estado,
+    this.pasoVa,
     this.jsonDatosDelivery,
     this.isFromClientPwa,
     this.pwaDeliveryStatus,
@@ -186,6 +188,7 @@ class Order {
         despachado: json["despachado"],
         subtotalesTachados: json["subtotales_tachados"],
         estado: json["estado"],
+        pasoVa: json["paso_va"],
         jsonDatosDelivery: json["json_datos_delivery"],
         isFromClientPwa: json["is_from_client_pwa"],
         pwaDeliveryStatus: json["pwa_delivery_status"],
@@ -254,6 +257,7 @@ class Order {
         "despachado": despachado,
         "subtotales_tachados": subtotalesTachados,
         "estado": estado,
+        "paso_va": pasoVa,
         "json_datos_delivery": jsonDatosDelivery,
         "is_from_client_pwa": isFromClientPwa,
         "pwa_delivery_status": pwaDeliveryStatus,

@@ -69,6 +69,12 @@ mixin RouterMixin on State<MyApp> {
                   return const ListOrdersAcceptedDeliveryLocalPage();
                 }
               }),
+          GoRoute(
+              path: '/orderDetail',
+              name: Routes.orderDetail,
+              builder: (context, state) {
+                return const DetailOrderPage();
+              }),
         ],
         redirect: (context, state) {
           final authProvider =

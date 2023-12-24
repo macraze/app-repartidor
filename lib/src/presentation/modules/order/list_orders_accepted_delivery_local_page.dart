@@ -1,13 +1,17 @@
 import 'dart:developer';
 
+import 'package:app_repartidor/src/data/services/socket_service.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
 import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
 import 'package:app_repartidor/src/presentation/providers/order_provider.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
+import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ListOrdersAcceptedDeliveryLocalPage extends StatefulWidget {
@@ -22,12 +26,18 @@ class _ListOrdersAcceptedDeliveryLocalPageState
     extends State<ListOrdersAcceptedDeliveryLocalPage> {
   void initFunctions() async {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final socketProvider = Provider.of<SocketProvider>(context, listen: false);
     final list = orderProvider.selectedOrdersAssignedLocal.join(',');
-    await orderProvider.getListOrdersAcceptedByIdsProvider(ids: list);
+
+    final newList =
+        await orderProvider.getListOrdersAcceptedByIdsProvider(ids: list);
+
     if (orderProvider.errorListOrdersPendingDeliveryLocal.isNotEmpty) {
       Snackbars.showSnackbarError(orderProvider.errorListOrdersAcceptedByIds);
     } else {
-      log(list);
+      //TODO: Emit event
+      socketProvider.cocinarLisPedidosNotificar(listOrders: newList);
+      // log(list);
     }
   }
 
@@ -101,7 +111,9 @@ class _ListOrdersAcceptedDeliveryLocalPageState
                 text: 'Asignarse Pedido',
                 style: CustomTextStyles.fontLabel(
                     fontSize: 13, fontWeight: FontWeight.bold),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 color: Colors.black,
               )
             ],
@@ -222,7 +234,7 @@ class OrderItemWidget extends StatelessWidget {
   void handleGoToDetailOrder(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     orderProvider.orderDetailSelected = order;
-    //TODO: Navigate to order detail page
+    GoRouter.of(context).pushNamed(Routes.orderDetail);
   }
 
   ContainerWidget _buildBadgeSection() {

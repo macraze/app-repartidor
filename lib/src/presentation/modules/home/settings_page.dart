@@ -1,11 +1,17 @@
+import 'package:app_repartidor/src/data/local/local_storage.dart';
+import 'package:app_repartidor/src/data/services/notification_service.dart';
+import 'package:app_repartidor/src/data/services/socket_service.dart';
+import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   static const String title =
@@ -19,6 +25,26 @@ class SettingsPage extends StatelessWidget {
   static const String labelButtonGPS = 'Aceptar Geolocalización';
 
   static const String labelButton = 'Listo, Iniciar';
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
+  void initState() {
+    // SocketService().initConfig();
+    final User user = LocalStorage.user.isNotEmpty
+        ? userFromJson(LocalStorage.user)
+        : User(idrepartidor: 0);
+
+    SocketClient socketService =
+        SocketClient.initSocket(idrepartidor: user.idrepartidor);
+    NotificationSocketsService notificationSocketsService =
+        NotificationSocketsService(socketService);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +75,7 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 children: [
                   const TextWidget(
-                    text: title,
+                    text: SettingsPage.title,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                     fontSize: 18,
@@ -57,7 +83,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
                   const TextWidget(
-                    text: permissionOrder,
+                    text: SettingsPage.permissionOrder,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                     fontSize: 15,
@@ -65,13 +91,13 @@ class SettingsPage extends StatelessWidget {
                   ),
                   ButtonWidget(
                     margin: const EdgeInsets.only(top: 5),
-                    text: labelButtonOrder,
+                    text: SettingsPage.labelButtonOrder,
                     onPressed: () {},
                     color: AppColors.secondary,
                   ),
                   const SizedBox(height: 20),
                   const TextWidget(
-                    text: permissionGPS,
+                    text: SettingsPage.permissionGPS,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                     fontSize: 15,
@@ -79,13 +105,13 @@ class SettingsPage extends StatelessWidget {
                   ),
                   ButtonWidget(
                     margin: const EdgeInsets.only(top: 5),
-                    text: labelButtonGPS,
+                    text: SettingsPage.labelButtonGPS,
                     onPressed: () {},
                     color: AppColors.secondary,
                   ),
                   ButtonWidget(
                     margin: const EdgeInsets.only(top: 30),
-                    text: labelButton,
+                    text: SettingsPage.labelButton,
                     onPressed: () {
                       GoRouter.of(context).pushNamed(Routes.ordersPending);
                     },
