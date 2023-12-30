@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:app_repartidor/src/data/api.dart';
+import 'package:app_repartidor/src/data/services/api_service.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 
 class AuthService {
@@ -11,7 +11,7 @@ class AuthService {
     };
 
     try {
-      final response = await Api.post(
+      final response = await ApiService.post(
           '/login-usuario-autorizado-repartidor', jsonEncode(authData));
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (decodedResp.containsKey('token')) {
@@ -32,7 +32,7 @@ class AuthService {
 
   Future<String?> getUserByToken() async {
     try {
-      final response = await Api.get('/validar-token');
+      final response = await ApiService.get('/validar-token');
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (decodedResp.containsKey('token')) {
         LocalStorage.token = decodedResp['token'];

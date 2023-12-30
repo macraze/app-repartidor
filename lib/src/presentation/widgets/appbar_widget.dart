@@ -5,8 +5,9 @@ import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class AppbarWidget extends StatelessWidget {
-  const AppbarWidget({super.key, this.actions});
+  const AppbarWidget({super.key, this.actions, this.leading});
 
+  final Widget? leading;
   final Widget? actions;
 
   @override
@@ -22,7 +23,7 @@ class AppbarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildUserInfo(user),
+            leading ?? _buildUserInfo(user),
             actions ?? const ContainerWidget(),
           ],
         ),

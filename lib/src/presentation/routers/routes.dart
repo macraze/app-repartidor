@@ -5,4 +5,5 @@ class Routes {
   static const login = 'login';
   static const ordersPending = 'ordersPending';
   static const ordersAccepted = 'ordersAccepted';
+  static const orderDetail = 'orderDetail';
 }

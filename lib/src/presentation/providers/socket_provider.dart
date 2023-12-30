@@ -1,13 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as io;
-
-import 'package:app_repartidor/src/data/environment.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/data/services/services.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/domain/entities/entities.dart';
-
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 
 enum ServerStatus { online, offline, connecting }
 
@@ -19,57 +18,70 @@ class SocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  late io.Socket _socket;
-  io.Socket get socket => _socket;
+  void updateToPedidoEntregado({required Order order}) {
+    try {
+      bool isRepartidorPropio = UserProvider().isRepartidorPropio;
 
-  static final String _urlSocket = Environment.urlServerSocket;
+      const four = 4;
+      const two = 2;
 
-  SocketProvider() {
-    _initConfig();
+      if (isRepartidorPropio) {
+        order.estado = four;
+        order.pasoVa = four;
+        order.pwaDeliveryStatus = four.toString();
+      } else {
+        order.estado = two;
+      }
+
+      final notificationServices = EventService(SocketService.getInstance()!);
+
+      notificationServices.emitUpdatePedidoEntregado(order, isRepartidorPropio);
+    } catch (e, stackTrace) {
+      log('Error al enviar datos al servidor: $e\n$stackTrace');
+    }
   }
 
-  void _initConfig() {
-    final User user = userFromJson(LocalStorage.user);
+  void cocinarLisPedidosNotificar({required List<Order> listOrders}) {
+    try {
+      List<ClienteNotificarEntity> listClienteNotificar = [];
 
-    final query = {
-      'idrepartidor': user.idrepartidor,
-      'isFromApp': 1,
-      'isRepartidor': true,
-      'firts_socketid': ''
-    };
+      for (Order order in listOrders) {
+        final delivery = order.jsonDatosDelivery!.isNotEmpty
+            ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
+            : JsonDatosDelivery();
 
-    _socket = io.io(
-      _urlSocket,
-      io.OptionBuilder()
-          .setQuery(query)
-          .setTransports(['websocket'])
-          .enableAutoConnect()
-          .build(),
-    );
+        TimeLine timeLineEntity = order.timeLine ?? TimeLine();
 
-    _socket.onConnect((_) {
-      log('connect');
-      serverStatus = ServerStatus.online;
-    });
+        final rowDatos = delivery.pHeader?.arrDatosDelivery;
 
-    // _socket.on('repartidor-get-pedido-pendiente-aceptar', (data) {
-    //   log('repartidor-get-pedido-pendiente-aceptar');
-    //   log('Evento recibido: $data');
-    // });
+        final User user = userFromJson(LocalStorage.user);
 
-    // _socket.on('set-repartidor-pedido-asigna-comercio', (data) {
-    //   log('set-repartidor-pedido-asigna-comercio');
-    //   log('Evento recibido: $data');
-    // });
+        if (rowDatos != null) {
+          final rowCliente = ClienteNotificarEntity(
+            nombre: rowDatos.nombre!.isNotEmpty
+                ? rowDatos.nombre!.split(' ')[0]
+                : '',
+            telefono: rowDatos.telefono ?? '',
+            establecimiento: rowDatos.establecimiento?.nombre ?? '',
+            idpedido: order.idpedido ?? 0,
+            repartidorNom: user.nombre?.split(' ')[0] ?? '',
+            repartidorTelefono: user.telefono ?? '',
+            idsede: rowDatos.establecimiento?.idsede ?? '',
+            idorg: rowDatos.establecimiento?.idorg ?? '',
+            timeLine: timeLineEntity,
+          );
 
-    _socket.onDisconnect((_) {
-      log('disconnect');
-      serverStatus = ServerStatus.offline;
-    });
-  }
+          listClienteNotificar.add(rowCliente);
+        }
+      }
 
-  void emitPedidoAceptado(List<ClienteNotificarEntity> listPedidos) {
-    final list = clienteNotificarToJson(listPedidos);
-    _socket.emit('repartidor-notifica-cliente-acepto-pedido', list);
+      final list = clienteNotificarToJson(listClienteNotificar);
+      final newList = json.encode(list);
+
+      final notificationServices = EventService(SocketService.getInstance()!);
+      notificationServices.emitPedidoAceptado(newList);
+    } catch (e, stackTrace) {
+      log('Error al enviar datos al servidor: $e\n$stackTrace');
+    }
   }
 }

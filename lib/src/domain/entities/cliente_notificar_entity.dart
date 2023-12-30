@@ -15,8 +15,8 @@ class ClienteNotificarEntity {
   int? idpedido;
   String? repartidorNom;
   String? repartidorTelefono;
-  String? idsede;
-  String? idorg;
+  dynamic idsede;
+  dynamic idorg;
   TimeLine? timeLine;
 
   ClienteNotificarEntity({
