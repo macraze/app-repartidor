@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:app_repartidor/src/data/services/notification_service.dart';
-import 'package:app_repartidor/src/data/services/socket_service.dart';
 import 'package:flutter/material.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as io;
-
-import 'package:app_repartidor/src/data/environment.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/data/services/services.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/domain/entities/entities.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 
 enum ServerStatus { online, offline, connecting }
 
@@ -21,50 +18,28 @@ class SocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // late io.Socket _socket;
-  // io.Socket get socket => _socket;
-  // Function get emit => _socket.emit;
+  void updateToPedidoEntregado({required Order order}) {
+    try {
+      bool isRepartidorPropio = UserProvider().isRepartidorPropio;
 
-  // static final String _urlSocket = Environment.urlServerSocket;
+      const four = 4;
+      const two = 2;
 
-  // void initConfig() {
-  //   final User user = LocalStorage.user.isNotEmpty
-  //       ? userFromJson(LocalStorage.user)
-  //       : User(idrepartidor: 0);
+      if (isRepartidorPropio) {
+        order.estado = four;
+        order.pasoVa = four;
+        order.pwaDeliveryStatus = four.toString();
+      } else {
+        order.estado = two;
+      }
 
-  //   final query = {
-  //     'idrepartidor': user.idrepartidor,
-  //     'isFromApp': 1,
-  //     'isRepartidor': true,
-  //   };
+      final notificationServices = EventService(SocketService.getInstance()!);
 
-  //   _socket = io.io(
-  //     _urlSocket,
-  //     io.OptionBuilder()
-  //         .setQuery(query)
-  //         .setTransports(['websocket'])
-  //         // .enableAutoConnect()
-  //         .disableAutoConnect()
-  //         // .enableForceNew()
-  //         .build(),
-  //   );
-
-  //   _socket.connect();
-
-  //   _socket.onConnect((_) {
-  //     log('connect SOCKET');
-  //     serverStatus = ServerStatus.online;
-  //   });
-
-  //   _socket.onDisconnect((_) {
-  //     log('disconnect SOCKET');
-  //     serverStatus = ServerStatus.offline;
-  //   });
-
-  //   _socket.onConnectError((error) {
-  //     log('Error connecting to the server: $error');
-  //   });
-  // }
+      notificationServices.emitUpdatePedidoEntregado(order, isRepartidorPropio);
+    } catch (e, stackTrace) {
+      log('Error al enviar datos al servidor: $e\n$stackTrace');
+    }
+  }
 
   void cocinarLisPedidosNotificar({required List<Order> listOrders}) {
     try {
@@ -101,45 +76,12 @@ class SocketProvider extends ChangeNotifier {
       }
 
       final list = clienteNotificarToJson(listClienteNotificar);
+      final newList = json.encode(list);
 
-      final n = jsonDecode(list);
-
-      log('EMIT repartidor-notifica-cliente-acepto-pedido');
-      final notificationServices =
-          NotificationSocketsService(SocketClient.getInstance()!);
-      notificationServices.emitPedidoAceptado(n);
-
-      // _socket.emit('repartidor-notifica-cliente-acepto-pedido', n);
+      final notificationServices = EventService(SocketService.getInstance()!);
+      notificationServices.emitPedidoAceptado(newList);
     } catch (e, stackTrace) {
       log('Error al enviar datos al servidor: $e\n$stackTrace');
-    }
-  }
-
-  void updateToPedidoEntregado({required Order order}) {
-    final User user = userFromJson(LocalStorage.user);
-
-    bool isRepartidorPropio = user.idsedeSuscrito == null ? false : true;
-
-    const four = 4;
-    const two = 2;
-
-    if (isRepartidorPropio) {
-      order.estado = four;
-      order.pasoVa = four;
-      order.pwaDeliveryStatus = four.toString();
-    } else {
-      order.estado = two;
-    }
-
-    final socketService = SocketClient.getInstance();
-
-    if (isRepartidorPropio) {
-      log('EMIT repartidor-propio-notifica-fin-pedido');
-      socketService!
-          .sendMessage('repartidor-propio-notifica-fin-pedido', order);
-    } else {
-      log('EMIT repartidor-notifica-fin-one-pedido');
-      socketService!.sendMessage('repartidor-notifica-fin-one-pedido', order);
     }
   }
 }

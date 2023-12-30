@@ -1,18 +1,16 @@
-import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-import 'package:app_repartidor/src/data/services/socket_service.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
-import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
-import 'package:app_repartidor/src/presentation/providers/order_provider.dart';
-import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
+import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
+import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
 
 class ListOrdersAcceptedDeliveryLocalPage extends StatefulWidget {
   const ListOrdersAcceptedDeliveryLocalPage({super.key});
@@ -35,9 +33,7 @@ class _ListOrdersAcceptedDeliveryLocalPageState
     if (orderProvider.errorListOrdersPendingDeliveryLocal.isNotEmpty) {
       Snackbars.showSnackbarError(orderProvider.errorListOrdersAcceptedByIds);
     } else {
-      //TODO: Emit event
       socketProvider.cocinarLisPedidosNotificar(listOrders: newList);
-      // log(list);
     }
   }
 

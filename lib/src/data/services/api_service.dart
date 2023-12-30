@@ -1,10 +1,10 @@
 import 'dart:developer';
+import 'package:http/http.dart' as http;
 
 import 'package:app_repartidor/src/data/environment.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
-import 'package:http/http.dart' as http;
 
-class Api {
+class ApiService {
   static final String _api = Environment.urlApi;
 
   static Future post(String path, Object? body) async {

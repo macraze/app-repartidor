@@ -1,15 +1,12 @@
-import 'package:app_repartidor/src/data/local/local_storage.dart';
-import 'package:app_repartidor/src/data/services/notification_service.dart';
-import 'package:app_repartidor/src/data/services/socket_service.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/presentation/providers/providers.dart';
+import 'package:app_repartidor/src/data/services/services.dart';
+import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
-import 'package:flutter/material.dart';
-
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -33,15 +30,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
-    // SocketService().initConfig();
     final User user = LocalStorage.user.isNotEmpty
         ? userFromJson(LocalStorage.user)
         : User(idrepartidor: 0);
 
-    SocketClient socketService =
-        SocketClient.initSocket(idrepartidor: user.idrepartidor);
-    NotificationSocketsService notificationSocketsService =
-        NotificationSocketsService(socketService);
+    SocketService socketService =
+        SocketService.initSocket(idrepartidor: user.idrepartidor);
+    EventService notificationSocketsService = EventService(socketService);
 
     super.initState();
   }

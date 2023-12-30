@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:app_repartidor/src/data/api.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/data/services/services.dart';
 import 'package:app_repartidor/src/data/local/local_storage.dart';
-import 'package:app_repartidor/src/domain/entities/entities.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 
 class OrderService {
   //Servicio para actualizar el status del repartidor global
@@ -19,8 +18,8 @@ class OrderService {
     };
 
     try {
-      final response =
-          await Api.post('/repartidor/set-efectivo-mano', jsonEncode(body));
+      final response = await ApiService.post(
+          '/repartidor/set-efectivo-mano', jsonEncode(body));
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;
@@ -35,8 +34,8 @@ class OrderService {
   // Servicio que trae la lista de pedidos del repartidor local
   Future<List<Order>> getListOrdersPendingDeliveryLocalService() async {
     try {
-      final response =
-          await Api.get('/repartidor/get-list-pedidos-pendientes-comercio');
+      final response = await ApiService.get(
+          '/repartidor/get-list-pedidos-pendientes-comercio');
       // log(response.body);
       final data = orderPendingLocalResponseFromJson(response.body);
       return data.data ?? [];
@@ -55,8 +54,8 @@ class OrderService {
     };
 
     try {
-      final response =
-          await Api.post('/repartidor/set-asignar-pedido2', jsonEncode(body));
+      final response = await ApiService.post(
+          '/repartidor/set-asignar-pedido2', jsonEncode(body));
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;
@@ -76,7 +75,7 @@ class OrderService {
     };
 
     try {
-      final response = await Api.post(
+      final response = await ApiService.post(
           '/repartidor/get-pedidos-recibidos-group', jsonEncode(body));
 
       final data = ordersAcceptedResponseFromJson(response.body);
@@ -171,7 +170,8 @@ class OrderService {
         ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
         : JsonDatosDelivery();
 
-    bool isRepartidorPropio = user.idsedeSuscrito == null ? false : true;
+    bool isRepartidorPropio = UserProvider().isRepartidorPropio;
+
     int pwaDeliveryComisionFijaNoAfiliado = delivery.pHeader?.arrDatosDelivery
             ?.establecimiento?.pwaDeliveryComisionFijaNoAfiliado ??
         0;
@@ -207,7 +207,7 @@ class OrderService {
     };
 
     try {
-      final response = await Api.post(
+      final response = await ApiService.post(
           '/repartidor/set-fin-pedido-entregado', jsonEncode(body));
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {

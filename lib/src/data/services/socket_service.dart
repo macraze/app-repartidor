@@ -1,15 +1,15 @@
 import 'dart:developer';
-
-import 'package:app_repartidor/src/data/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class SocketClient {
-  static SocketClient? _instance;
+import 'package:app_repartidor/src/data/environment.dart';
+
+class SocketService {
+  static SocketService? _instance;
   final io.Socket socket;
   final Map<String, List<Function>> eventListeners = {};
   static final String socketServerUrl = Environment.urlServerSocket;
 
-  SocketClient._(String url, dynamic query)
+  SocketService._(String url, Map<String, Object> query)
       : socket = io.io(
             url,
             io.OptionBuilder()
@@ -17,11 +17,11 @@ class SocketClient {
                 .setTransports(['websocket'])
                 .enableAutoConnect()
                 .build()) {
-    socket.on('connect', (_) => connect());
+    socket.on('connect', (_) => onConnect());
     socket.on('disconnect', (_) => onDisconnect());
   }
 
-  static SocketClient initSocket({int idrepartidor = 0}) {
+  static SocketService initSocket({int idrepartidor = 0}) {
     final query = {
       'idrepartidor': idrepartidor,
       'isFromApp': 1,
@@ -29,19 +29,20 @@ class SocketClient {
       'firts_socketid': '',
     };
 
-    _instance ??= SocketClient._(socketServerUrl, query);
+    _instance ??= SocketService._(socketServerUrl, query);
 
     return _instance!;
   }
 
-  static SocketClient? getInstance() => _instance;
+  static SocketService? getInstance() => _instance;
 
   void onConnect() {
-    log('Connected to Socket');
+    log('Socket Connected');
   }
 
   void onDisconnect() {
-    log('Disconnected from Socket');
+    disconnect();
+    log('Socket Disconnected');
   }
 
   void sendMessage(String message, dynamic payload) {
@@ -55,18 +56,13 @@ class SocketClient {
 
   bool isConnected() => socket.connected;
 
-  void connect() {
-    log('Connected to Socket');
-    socket.connect();
-  }
-
-  void on(String event, Function(dynamic) callback) {
+  void on(String event, dynamic callback) {
     eventListeners[event] ??= [];
     eventListeners[event]!.add(callback);
     socket.on(event, callback);
   }
 
-  void off(String event, Function(dynamic) callback) {
+  void off(String event, dynamic callback) {
     final listeners = eventListeners[event];
     if (listeners != null) {
       final index = listeners.indexOf(callback);

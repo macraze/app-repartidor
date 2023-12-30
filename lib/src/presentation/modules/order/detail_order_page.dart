@@ -1,15 +1,14 @@
 import 'dart:io';
-
-import 'package:app_repartidor/src/data/local/local_storage.dart';
-import 'package:app_repartidor/src/data/services/socket_service.dart';
-import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
-import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:app_repartidor/src/presentation/styles/styles.dart';
-import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
+
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/presentation/styles/styles.dart';
+import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
+import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
 
 class DetailOrderPage extends StatelessWidget {
   const DetailOrderPage({super.key});
@@ -96,8 +95,7 @@ class DetailOrderPage extends StatelessWidget {
         ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
         : JsonDatosDelivery();
 
-    final User user = userFromJson(LocalStorage.user);
-    final bool isRepartidorPropio = user.idsedeSuscrito == null ? false : true;
+    bool isRepartidorPropio = UserProvider().isRepartidorPropio;
 
     if (!isRepartidorPropio) {
       return Column(
@@ -511,7 +509,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   void callPhone({required String phone}) async {
-    final url = Uri(scheme: 'tel', path: '+51${phone}');
+    final url = Uri(scheme: 'tel', path: '+51$phone');
 
     if (await canLaunchUrl(url)) {
       launchUrl(url, mode: LaunchMode.externalApplication);
