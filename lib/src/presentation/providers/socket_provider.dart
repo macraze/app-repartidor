@@ -78,7 +78,15 @@ class SocketProvider extends ChangeNotifier {
       final list = clienteNotificarToJson(listClienteNotificar);
       final newList = json.encode(list);
 
-      final notificationServices = EventService(SocketService.getInstance()!);
+      final User user = LocalStorage.user.isNotEmpty
+          ? userFromJson(LocalStorage.user)
+          : User(idrepartidor: 0);
+
+      SocketService socketService =
+          SocketService.initSocket(idrepartidor: user.idrepartidor);
+
+      final notificationServices = EventService(socketService);
+
       notificationServices.emitPedidoAceptado(newList);
     } catch (e, stackTrace) {
       log('Error al enviar datos al servidor: $e\n$stackTrace');

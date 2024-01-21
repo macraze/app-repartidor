@@ -1,5 +1,6 @@
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/presentation/modules/order/order_temp_page.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ mixin RouterMixin on State<MyApp> {
     if (_router != null) return _router!;
 
     _router = GoRouter(
-        refreshListenable: authProvider,
+        refreshListenable: Listenable.merge([authProvider, authProvider]),
         initialLocation: '/splash',
         navigatorKey: rootNavigatorKey,
         errorBuilder: (context, state) {
@@ -45,13 +46,18 @@ mixin RouterMixin on State<MyApp> {
             builder: (context, state) => const SettingsPage(),
           ),
           GoRoute(
+            path: '/orderTemp',
+            name: Routes.orderTemp,
+            builder: (context, state) => const OrderTempPage(),
+          ),
+          GoRoute(
             path: '/ordersPending',
             name: Routes.ordersPending,
             builder: (context, state) {
               final User user = userFromJson(LocalStorage.user);
 
               if (user.idsedeSuscrito == null) {
-                return OrderWaitPage();
+                return AssignOrderByCodePage();
               } else {
                 return const ListOrdersPendingDeliveryLocalPage();
               }
@@ -64,7 +70,7 @@ mixin RouterMixin on State<MyApp> {
                 final User user = userFromJson(LocalStorage.user);
 
                 if (user.idsedeSuscrito == null) {
-                  return OrderWaitPage();
+                  return AssignOrderByCodePage();
                 } else {
                   return const ListOrdersAcceptedDeliveryLocalPage();
                 }

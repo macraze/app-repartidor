@@ -23,6 +23,10 @@ class AppState extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => OrderProvider()),
       ChangeNotifierProvider(create: (_) => SocketProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderTempProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderPendingProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderPendingProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => AssignOrderByCodeProvider(), lazy: false),
     ];
 
     return MultiProvider(

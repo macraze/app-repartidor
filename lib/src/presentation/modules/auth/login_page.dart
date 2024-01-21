@@ -106,6 +106,7 @@ class LoginPage extends StatelessWidget {
               color: AppColors.textColorLight,
             ),
             TextFieldWidget(
+              autocorrect: false,
               style: const TextStyle(color: Colors.black, fontSize: 14),
               onChanged: (value) => loginForm.username = value,
               validator: Validators.usernameValidator,

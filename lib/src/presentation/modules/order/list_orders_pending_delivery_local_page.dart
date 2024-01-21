@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
@@ -12,9 +12,16 @@ import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
 import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
 import 'package:app_repartidor/src/presentation/common/constants/constants.dart';
 
-class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
+class ListOrdersPendingDeliveryLocalPage extends StatefulWidget {
   const ListOrdersPendingDeliveryLocalPage({super.key});
 
+  @override
+  State<ListOrdersPendingDeliveryLocalPage> createState() =>
+      _ListOrdersPendingDeliveryLocalPageState();
+}
+
+class _ListOrdersPendingDeliveryLocalPageState
+    extends State<ListOrdersPendingDeliveryLocalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,6 +186,8 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
 
     final response =
         await orderProvider.acceptListOrdersByIdsProvider(ids: list);
+
+    if (!mounted) return;
 
     if (response != null) {
       Snackbars.showSnackbarError(response);
