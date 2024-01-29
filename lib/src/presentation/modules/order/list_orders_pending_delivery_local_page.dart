@@ -38,7 +38,7 @@ class _ListOrdersPendingDeliveryLocalPageState
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const AppbarWidget(),
+            AppbarWidget(),
             Image.asset(
               IconConstant.logoHappyMusic,
               width: size.width * 0.8,

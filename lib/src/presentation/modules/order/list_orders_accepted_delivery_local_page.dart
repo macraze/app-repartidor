@@ -59,7 +59,7 @@ class _ListOrdersAcceptedDeliveryLocalPageState
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const AppbarWidget(),
+            AppbarWidget(),
             _buildBodyContainer(context),
           ],
         ),

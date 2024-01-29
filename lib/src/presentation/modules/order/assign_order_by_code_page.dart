@@ -1,10 +1,9 @@
+import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:provider/provider.dart';
 
 import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:app_repartidor/src/presentation/providers/providers.dart';
@@ -25,148 +24,19 @@ class AssignOrderByCodePage extends StatelessWidget {
   }
 
   Widget _getBody(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
-    final User user = userFromJson(LocalStorage.user);
-
-    String title = orderProvider.switchValue ? 'En línea' : 'Offline';
-
-    Size size = MediaQuery.of(context).size;
-
     return ContainerWidget(
       width: double.infinity,
       height: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          AppbarWidget(
-            actions: _buildSwitch(orderProvider, context, user, title),
-          ),
+          AppbarWidget(),
           Expanded(
             child: _buildBody(context),
           ),
         ],
       ),
     );
-  }
-
-  Column _buildSwitch(OrderProvider orderProvider, BuildContext context,
-      User user, String title) {
-    return Column(
-      children: [
-        (orderProvider.isLoadingOnline == true)
-            ? const CircularIndicatorWidget(height: 39, width: 59)
-            : CupertinoSwitch(
-                value: orderProvider.switchValue,
-                activeColor: AppColors.tertiary,
-                onChanged: (bool? value) async {
-                  if (value == true) {
-                    _showInputDialog(context, user);
-                  } else {
-                    await handleSwitchChange(context, value, user);
-                  }
-                },
-              ),
-        TextWidget(text: title)
-      ],
-    );
-  }
-
-  void _showInputDialog(BuildContext context, User user) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        final orderProvider = Provider.of<OrderProvider>(context);
-
-        return AlertDialog(
-          title: const TextWidget(
-            text: 'Confirmación',
-            color: Colors.black,
-            fontSize: 22,
-            textAlign: TextAlign.start,
-          ),
-          content: Form(
-            key: orderProvider.formKey,
-            autovalidateMode: AutovalidateMode.disabled,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const TextWidget(
-                  text: '¿Está seguro de actualizar su estado a "En línea"?',
-                  color: Colors.black,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 15,
-                  maxLines: 3,
-                  textAlign: TextAlign.start,
-                ),
-                const SizedBox(height: 10),
-                TextFieldWidget(
-                  style: const TextStyle(color: Colors.black, fontSize: 14),
-                  onChanged: (value) =>
-                      orderProvider.mount = int.tryParse(value) ?? 0,
-                  validator: (value) =>
-                      Validators.mountValidator(int.tryParse(value ?? '0')),
-                  focusNode: _focusUser,
-                  onFieldSubmitted: (_) {
-                    handleAlertSwitch(context, user);
-                  },
-                  decoration: CustomInputs.loginInputDecoration(
-                      hintText: 'Monto para empezar',
-                      hintStyle:
-                          const TextStyle(color: AppColors.textColorLight),
-                      color: Colors.transparent,
-                      isDense: true),
-                  keyboardType: TextInputType.number,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                handleAlertSwitch(dialogContext, user);
-              },
-              child: const TextWidget(text: 'Ejecutar', color: Colors.black),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-              },
-              child: const TextWidget(text: 'Cancelar', color: Colors.black),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void handleAlertSwitch(BuildContext context, User user) {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-
-    if (!orderProvider.isValidForm()) return;
-
-    Navigator.pop(context);
-
-    handleSwitchChange(context, true, user);
-  }
-
-  Future handleSwitchChange(
-      BuildContext context, bool? value, User user) async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-
-    if (orderProvider.isLoadingOnline) return;
-
-    final String? errorMessage = await orderProvider.connectOrderProvider(
-        idRepartidor: user.idrepartidor,
-        mount: orderProvider.mount,
-        isOnline: value == true ? 1 : 0);
-
-    if (errorMessage != null) {
-      Snackbars.showSnackbarError(errorMessage);
-    } else {
-      orderProvider.switchValue = value ?? false;
-      Snackbars.showSnackbarSuccess(
-          'El estado del repartidor ha sido actualizado.');
-    }
   }
 
   ContainerWidget _buildBody(BuildContext context) {
@@ -258,18 +128,6 @@ class AssignOrderByCodePage extends StatelessWidget {
               ),
             ],
           ),
-          ButtonWidget(
-            text: 'Ok',
-            margin: const EdgeInsets.only(top: 20),
-            style: CustomTextStyles.fontLabel(
-                fontSize: 15, fontWeight: FontWeight.bold),
-            onPressed: () async {
-              final provider =
-                  Provider.of<OrderTempProvider>(context, listen: false);
-
-              // provider.isShowCatWaiting; // TODO: Se tiene que dar el valor false a isShowCatWaiting
-            },
-          ),
           if (provider.responseMessage.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -286,23 +144,44 @@ class AssignOrderByCodePage extends StatelessWidget {
   }
 
   Future actionAsignOrder(context) async {
-    final provider =
+    final assignOrderByCodeProvider =
         Provider.of<AssignOrderByCodeProvider>(context, listen: false);
 
     User user = UserProvider().user;
 
-    if (!provider.isValidForm()) return;
+    if (!assignOrderByCodeProvider.isValidForm()) return;
 
     FocusScope.of(context).unfocus();
 
-    final String? errorMessage = await provider.assignOrderProvider(
-        idPedido: int.parse(provider.orderCode),
-        idRepartidor: user.idrepartidor);
+    final String? errorMessage =
+        await assignOrderByCodeProvider.assignOrderProvider(
+            idPedido: int.parse(assignOrderByCodeProvider.orderCode),
+            idRepartidor: user.idrepartidor);
 
-    if (errorMessage != null) {
-      Snackbars.showSnackbarError(errorMessage);
-    } else {
-      Snackbars.showSnackbarSuccess('Asignación de pedido correcta.');
-    }
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+
+    final String? errorMeesage2 =
+        await orderProvider.acceptListOrdersByIdsProvider(
+            ids: assignOrderByCodeProvider.orderCode);
+
+    final listOrders = await orderProvider.getListOrdersAcceptedByIdsProvider(
+        ids: assignOrderByCodeProvider.orderCode);
+
+    final socketProvider = Provider.of<SocketProvider>(context, listen: false);
+
+    LocalStorage.pedidosAceptados = orderAcceptedLocalToJson(listOrders);
+
+    socketProvider.cocinarLisPedidosNotificar(listOrders: listOrders);
+
+    final orderTempProvider =
+        Provider.of<OrderTempProvider>(context, listen: false);
+
+    orderTempProvider.isShowCatWaiting = false;
+
+    // if (errorMessage != null) {
+    //   Snackbars.showSnackbarError(errorMessage);
+    // } else {
+    Snackbars.showSnackbarSuccess('Asignación de pedido correcta.');
+    // }
   }
 }

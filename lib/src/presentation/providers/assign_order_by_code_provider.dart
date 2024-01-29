@@ -1,5 +1,6 @@
 import 'package:app_repartidor/src/data/services/services.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
 
 class AssignOrderByCodeProvider extends ChangeNotifier {
@@ -56,6 +57,13 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
     isLoadingOrderCode = true;
     OrderService service = OrderService();
 
+    User user = UserProvider().user;
+    int pedidosAsignados = user.pedidosAsignados ?? 0;
+
+    if (pedidosAsignados >= 3) {
+      return _handleManyOrders();
+    }
+
     try {
       AssignOrderResponse response = await service.postAssignOrderService(
           idRepartidor: idRepartidor, idpedido: idPedido);
@@ -73,6 +81,8 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
         return _handleAlreadyAssignedOrder();
       }
 
+      UserProvider().incrementarPedidosAsignados();
+
       return _handleSuccessfulAssignment();
     } catch (e) {
       return _handleAssignmentError(e);
@@ -89,6 +99,12 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
 
   bool _isOrderAlreadyAssigned(AssignOrderResponse apiResponse) {
     return apiResponse.data[0].idrepartidor != null;
+  }
+
+  String? _handleManyOrders() {
+    updateRptMessage(
+        'Ya tienes muchos pedidos!. Entrega lo que tienes primero.', false);
+    return 'Error: Ya tienes muchos pedidos!. Entrega lo que tienes primero.';
   }
 
   String? _handleNonExistentOrder() {

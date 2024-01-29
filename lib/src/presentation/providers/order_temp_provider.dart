@@ -26,9 +26,27 @@ class OrderTempProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _overrideShowCatWaiting = false;
+
+  bool _isShowCatWaiting = false;
+
   bool get isShowCatWaiting {
+    if (_overrideShowCatWaiting) {
+      return _isShowCatWaiting;
+    }
     loadPedidosAceptados();
     return _listOrdersAcepts.isEmpty && !_orderPendingVisible;
+  }
+
+  set isShowCatWaiting(bool value) {
+    _overrideShowCatWaiting = true;
+    _isShowCatWaiting = value;
+    notifyListeners();
+  }
+
+  void resetShowCatWaiting() {
+    _overrideShowCatWaiting = false;
+    notifyListeners();
   }
 
   bool get isShowOrderPending => _orderPendingVisible;
@@ -37,6 +55,7 @@ class OrderTempProvider extends ChangeNotifier {
     final String pedidosAceptadosString = LocalStorage.pedidosAceptados;
     if (pedidosAceptadosString.isNotEmpty) {
       _listOrdersAcepts = orderAcceptedLocalFromJson(pedidosAceptadosString);
+      resetShowCatWaiting();
     }
   }
 
@@ -52,22 +71,25 @@ class OrderTempProvider extends ChangeNotifier {
 
     notificationServices.onPedidosPorAceptar((data) {
       orderPending = OrdersToAccept.fromJson(data);
+      resetShowCatWaiting();
       orderPendingVisible = true;
     });
 
-    // notificationServices.onPedidosPendientesPorAceptar((data) {
-    //   orderPending = OrdersToAccept.fromJson(data);
-    //   if (orderPending?.pedidoPorAceptar != null) {
-    //     isShowOrderPending = true;
-    //   } else {
-    //     isShowOrderPending = false;
-    //     orderPending = null;
-    //   }
-    // });
+    notificationServices.onPedidosPendientesPorAceptar((data) {
+      orderPending = OrdersToAccept.fromJson(data);
+      resetShowCatWaiting();
+      if (orderPending?.pedidoPorAceptar != null) {
+        orderPendingVisible = true;
+      } else {
+        orderPendingVisible = false;
+        orderPending = null;
+      }
+    });
 
     // Actualizar el estado cuando un pedido es removido
     notificationServices.onPedidoRemovidoByBackEnd((data) {
       orderPending = null;
+      resetShowCatWaiting();
       orderPendingVisible = false;
     });
 

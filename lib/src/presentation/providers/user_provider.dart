@@ -41,6 +41,20 @@ class UserProvider extends ChangeNotifier {
     notifyListeners(); // Notifica a los oyentes que los datos del usuario han cambiado.
   }
 
+  // Método para incrementar en 1 los pedidos asignados del usuario.
+  void incrementarPedidosAsignados() {
+    if (_user.pedidosAsignados != null) {
+      // Incrementa en 1 el valor de pedidosAsignados.
+      _user.pedidosAsignados = _user.pedidosAsignados! + 1;
+    } else {
+      // Si es null, inicializa a 1.
+      _user.pedidosAsignados = 1;
+    }
+    LocalStorage.user =
+        userToJson(_user); // Actualiza el usuario en el almacenamiento local.
+    notifyListeners(); // Notifica a los oyentes que los datos del usuario han cambiado.
+  }
+
   // Método para verificar si el usuario es un repartidor propio (de acuerdo a su id de sede suscrito).
   bool get isRepartidorPropio => _user.idsedeSuscrito == null ? false : true;
 }
