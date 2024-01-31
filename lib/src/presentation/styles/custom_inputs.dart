@@ -52,4 +52,43 @@ class CustomInputs {
       isDense: isDense,
     );
   }
+
+  static InputDecoration inputDecoration({
+    String? hintText,
+    TextStyle? hintStyle,
+    Color? borderColor,
+    bool? isDense,
+    EdgeInsetsGeometry? contentPadding,
+    Color? focusedBorderColor,
+    Color? errorBorderColor,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      hintStyle: hintStyle ?? const TextStyle(color: Colors.grey),
+      contentPadding: contentPadding ??
+          const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      isDense: isDense,
+      filled: true,
+      fillColor: Colors.white,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor ?? Colors.black, width: 1.0),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide:
+            BorderSide(color: focusedBorderColor ?? Colors.blue, width: 2.0),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide:
+            BorderSide(color: errorBorderColor ?? Colors.red, width: 1.0),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide:
+            BorderSide(color: errorBorderColor ?? Colors.red, width: 2.0),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+    );
+  }
 }

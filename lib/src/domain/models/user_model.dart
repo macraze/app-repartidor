@@ -17,6 +17,7 @@ class User {
   String? pass;
   int? idsedeSuscrito;
   String? telefono;
+  int? pedidosAsignados;
 
   User({
     required this.idrepartidor,
@@ -27,6 +28,7 @@ class User {
     this.pass,
     this.idsedeSuscrito,
     this.telefono,
+    this.pedidosAsignados,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -38,6 +40,7 @@ class User {
         pass: json["pass"],
         idsedeSuscrito: json["idsede_suscrito"],
         telefono: json["telefono"],
+        pedidosAsignados: json["pedidos_asignados"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,5 +52,6 @@ class User {
         "pass": pass,
         "idsede_suscrito": idsedeSuscrito,
         "telefono": telefono,
+        "pedidos_asignados": pedidosAsignados,
       };
 }

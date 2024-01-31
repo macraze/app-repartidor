@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/data/services/services.dart';
-import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
@@ -30,13 +27,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
-    final User user = LocalStorage.user.isNotEmpty
-        ? userFromJson(LocalStorage.user)
-        : User(idrepartidor: 0);
+    // final User user = LocalStorage.user.isNotEmpty
+    //     ? userFromJson(LocalStorage.user)
+    //     : User(idrepartidor: 0);
 
-    SocketService socketService =
-        SocketService.initSocket(idrepartidor: user.idrepartidor);
-    EventService notificationSocketsService = EventService(socketService);
+    // SocketService socketService =
+    //     SocketService.initSocket(idrepartidor: user.idrepartidor);
+    // EventService notificationSocketsService = EventService(socketService);
 
     super.initState();
   }
@@ -108,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     margin: const EdgeInsets.only(top: 30),
                     text: SettingsPage.labelButton,
                     onPressed: () {
-                      GoRouter.of(context).pushNamed(Routes.ordersPending);
+                      GoRouter.of(context).pushNamed(Routes.orderTemp);
                     },
                     color: AppColors.primary,
                   ),

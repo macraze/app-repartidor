@@ -31,6 +31,23 @@ class OrderService {
     }
   }
 
+  //Servicio para actualizar el status del repartidor global
+  Future<AssignOrderResponse> postAssignOrderService(
+      {required int idRepartidor, required int idpedido}) async {
+    final Map<String, dynamic> body = {
+      'idpedido': idpedido,
+      'idrepartidor': idRepartidor,
+    };
+
+    try {
+      final response =
+          await ApiService.post('/comercio/get-pedido-by-id', jsonEncode(body));
+      return assignOrderResponseFromJson(response.body);
+    } catch (e) {
+      return AssignOrderResponse(data: [], success: false);
+    }
+  }
+
   // Servicio que trae la lista de pedidos del repartidor local
   Future<List<Order>> getListOrdersPendingDeliveryLocalService() async {
     try {
@@ -80,11 +97,21 @@ class OrderService {
 
       final data = ordersAcceptedResponseFromJson(response.body);
 
-      final list = data.data ?? [];
+      final List<Order> list = data.data ?? [];
+
+      // Aqui se tiene que leer el Localstorage.pedidosAceptados y aumentarle los valores de list
+      // Luego esa nueva lista se tiene que mapear y el resto es historia
+      String storedOrdersJson = LocalStorage.pedidosAceptados;
+      if (storedOrdersJson.isNotEmpty) {
+        List<Order> storedOrders = orderAcceptedLocalFromJson(storedOrdersJson);
+        list.addAll(storedOrders);
+      }
 
       final List<Order> mappedData = list.map<Order>((order) {
         return cocinarDataPedido(order: order);
       }).toList();
+
+      LocalStorage.pedidosAceptados = orderAcceptedLocalToJson(mappedData);
 
       return mappedData;
     } catch (e) {
@@ -209,6 +236,23 @@ class OrderService {
     try {
       final response = await ApiService.post(
           '/repartidor/set-fin-pedido-entregado', jsonEncode(body));
+      final Map<String, dynamic> decodedResp = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return null;
+      } else {
+        return decodedResp['message'];
+      }
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  //Servicio para actualizar el pedidos por aceptar a vacío
+  Future<String?> postSetNullPedidosPorAceptar() async {
+    final body = [];
+    try {
+      final response = await ApiService.post(
+          '/repartidor/set-pedidos-por-aceptar-from-app', jsonEncode(body));
       final Map<String, dynamic> decodedResp = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;

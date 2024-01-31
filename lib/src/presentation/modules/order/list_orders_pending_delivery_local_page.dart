@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
@@ -12,9 +12,16 @@ import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
 import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
 import 'package:app_repartidor/src/presentation/common/constants/constants.dart';
 
-class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
+class ListOrdersPendingDeliveryLocalPage extends StatefulWidget {
   const ListOrdersPendingDeliveryLocalPage({super.key});
 
+  @override
+  State<ListOrdersPendingDeliveryLocalPage> createState() =>
+      _ListOrdersPendingDeliveryLocalPageState();
+}
+
+class _ListOrdersPendingDeliveryLocalPageState
+    extends State<ListOrdersPendingDeliveryLocalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +38,7 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const AppbarWidget(),
+            AppbarWidget(),
             Image.asset(
               IconConstant.logoHappyMusic,
               width: size.width * 0.8,
@@ -44,14 +51,14 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
   }
 
   Widget _buildBodyContainer(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     if (!orderProvider.showListOrdersPendingDeliveryLocal) {
       return ButtonWidget(
         text: 'Asignarse pedido',
         onPressed: () async {
           final orderProvider =
-              Provider.of<OrderProvider>(context, listen: false);
+              Provider.of<OrderHeaderProvider>(context, listen: false);
 
           await orderProvider.getListOrdersPendingDeliveryLocalProvider();
 
@@ -107,7 +114,7 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
   }
 
   Widget _buildListOrders(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     if (orderProvider.listOrdersPendingDeliveryLocal.isEmpty) {
       return const ContainerWidget(
@@ -135,7 +142,7 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
   }
 
   Row _buildButtonsActionsOrders(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -169,7 +176,7 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
   }
 
   void _handleAcceptOrders(BuildContext context) async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context, listen: false);
 
     if (orderProvider.selectedOrdersAssignedLocal.isEmpty) {
       return;
@@ -179,6 +186,8 @@ class ListOrdersPendingDeliveryLocalPage extends StatelessWidget {
 
     final response =
         await orderProvider.acceptListOrdersByIdsProvider(ids: list);
+
+    if (!mounted) return;
 
     if (response != null) {
       Snackbars.showSnackbarError(response);
@@ -200,7 +209,7 @@ class ItemOrderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     final delivery = jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!);
 

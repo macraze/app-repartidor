@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:app_repartidor/src/presentation/providers/order_detail_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   AppbarWidget _buidAppbar(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderDetailProvider>(context);
     final Order order = orderProvider.orderDetailSelected;
 
     return AppbarWidget(
@@ -89,7 +90,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   Widget _buildComercio(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderDetailProvider>(context);
     final Order order = orderProvider.orderDetailSelected;
     final JsonDatosDelivery delivery = order.jsonDatosDelivery!.isNotEmpty
         ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
@@ -143,7 +144,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   Widget _buildCliente(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderDetailProvider>(context);
     final Order order = orderProvider.orderDetailSelected;
     final JsonDatosDelivery delivery = order.jsonDatosDelivery!.isNotEmpty
         ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
@@ -246,7 +247,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   Widget _buildDetailOrder(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderDetailProvider>(context);
     final Order order = orderProvider.orderDetailSelected;
     final JsonDatosDelivery delivery = order.jsonDatosDelivery!.isNotEmpty
         ? jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!)
@@ -456,7 +457,7 @@ class DetailOrderPage extends StatelessWidget {
   }
 
   Widget _buildButtons(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderDetailProvider>(context);
     final socketProvider = Provider.of<SocketProvider>(context);
     final Order order = orderProvider.orderDetailSelected;
 

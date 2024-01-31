@@ -19,6 +19,8 @@ class TextFieldWidget extends StatelessWidget {
     this.cursorColor,
     this.maxLines = 1,
     this.style,
+    this.autocorrect = true,
+    this.textAlign = TextAlign.start,
   }) : super(key: key);
 
   final String? hintText;
@@ -35,10 +37,13 @@ class TextFieldWidget extends StatelessWidget {
   final Color? cursorColor;
   final int? maxLines;
   final TextStyle? style;
+  final bool autocorrect;
+  final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textAlign: textAlign,
       controller: controller,
       obscureText: obscureText,
       onFieldSubmitted: onFieldSubmitted,
@@ -46,6 +51,7 @@ class TextFieldWidget extends StatelessWidget {
       onChanged: onChanged,
       validator: validator,
       focusNode: focusNode,
+      autocorrect: autocorrect,
       textAlignVertical: TextAlignVertical.center,
       cursorColor: cursorColor ?? AppColors.secondary,
       scrollPadding: EdgeInsets.zero,

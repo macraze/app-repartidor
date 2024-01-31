@@ -1,49 +1,16 @@
-import 'package:app_repartidor/src/presentation/providers/order_detail_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-
-import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
-
 import 'package:app_repartidor/src/domain/models/models.dart';
+import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
+import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:app_repartidor/src/presentation/styles/styles.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
-import 'package:app_repartidor/src/presentation/providers/providers.dart';
-import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
-import 'package:app_repartidor/src/presentation/common/helpers/helpers.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class ListOrdersAcceptedDeliveryLocalPage extends StatefulWidget {
-  const ListOrdersAcceptedDeliveryLocalPage({super.key});
-
-  @override
-  State<ListOrdersAcceptedDeliveryLocalPage> createState() =>
-      _ListOrdersAcceptedDeliveryLocalPageState();
-}
-
-class _ListOrdersAcceptedDeliveryLocalPageState
-    extends State<ListOrdersAcceptedDeliveryLocalPage> {
-  void initFunctions() async {
-    final orderProvider =
-        Provider.of<OrderHeaderProvider>(context, listen: false);
-    final socketProvider = Provider.of<SocketProvider>(context, listen: false);
-    final list = orderProvider.selectedOrdersAssignedLocal.join(',');
-
-    final newList =
-        await orderProvider.getListOrdersAcceptedByIdsProvider(ids: list);
-
-    if (orderProvider.errorListOrdersPendingDeliveryLocal.isNotEmpty) {
-      Snackbars.showSnackbarError(orderProvider.errorListOrdersAcceptedByIds);
-    } else {
-      socketProvider.cocinarLisPedidosNotificar(listOrders: newList);
-    }
-  }
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => initFunctions());
-    super.initState();
-  }
+class OrderListPage extends StatelessWidget {
+  const OrderListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +37,16 @@ class _ListOrdersAcceptedDeliveryLocalPageState
   }
 
   Widget _buildBodyContainer(BuildContext context) {
-    final orderProvider = Provider.of<OrderHeaderProvider>(context);
+    final orderProvider = Provider.of<OrderListProvider>(context);
 
     double totalProductos =
-        calculateTotalProductos(orderProvider.listOrdersAcceptedByIds);
-    double costoDelivery =
-        calculateCostoDelivery(orderProvider.listOrdersAcceptedByIds);
+        calculateTotalProductos(orderProvider.ordersAccepted);
+    double costoDelivery = calculateCostoDelivery(orderProvider.ordersAccepted);
 
-    if (orderProvider.isLoadingListOrdersAcceptedByIds) {
-      return const Center(
-          child: CircularIndicatorWidget(color: AppColors.primary));
-    }
+    // if (orderProvider.isLoadingListOrdersAcceptedByIds) {
+    //   return const Center(
+    //       child: CircularIndicatorWidget(color: AppColors.primary));
+    // }
 
     return ContainerWidget(
       margin: const EdgeInsets.all(20),
@@ -110,7 +76,8 @@ class _ListOrdersAcceptedDeliveryLocalPageState
                 style: CustomTextStyles.fontLabel(
                     fontSize: 13, fontWeight: FontWeight.bold),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  // Navigator.of(context).pop();
+                  GoRouter.of(context).pushNamed(Routes.assignOrderByCode);
                 },
                 color: Colors.black,
               )
@@ -120,11 +87,11 @@ class _ListOrdersAcceptedDeliveryLocalPageState
           ContainerWidget(
             child: ListView.separated(
               padding: EdgeInsets.zero,
-              itemCount: orderProvider.listOrdersAcceptedByIds.length,
+              itemCount: orderProvider.ordersAccepted.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final order = orderProvider.listOrdersAcceptedByIds[index];
+                final order = orderProvider.ordersAccepted[index];
                 return OrderItemWidget(order: order);
               },
               separatorBuilder: (context, index) {
@@ -192,6 +159,8 @@ class _ListOrdersAcceptedDeliveryLocalPageState
         .fold(0.0, (acc, costo) => acc + costo);
   }
 }
+
+//TODO get ListOrdersAcceptedDeliveryLocalPage here
 
 class OrderItemWidget extends StatelessWidget {
   const OrderItemWidget({

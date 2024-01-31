@@ -27,4 +27,17 @@ class Validators {
     if (value > 1000) return 'El máximo es 1000';
     return null;
   }
+
+  static String? orderCodeValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Ingrese un código';
+    }
+    if (!RegExp(r'^\d+$').hasMatch(value)) {
+      return 'El código debe ser numérico';
+    }
+    if (value.length < 4) {
+      return 'El código es mínimo 4 dígitos';
+    }
+    return null;
+  }
 }

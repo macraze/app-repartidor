@@ -19,6 +19,19 @@ class SocketService {
                 .build()) {
     socket.on('connect', (_) => onConnect());
     socket.on('disconnect', (_) => onDisconnect());
+    socket.on('connect_error', (data) => log(' connect_error === $data'));
+    socket.on('connect_timeout', (data) => log(' connect_timeout === $data'));
+    socket.on('connecting', (data) => log(' connecting === $data'));
+    socket.on('error', (data) => log(' error === $data'));
+    socket.on('reconnect', (data) => log(' reconnect === $data'));
+    socket.on(
+        'reconnect_attempt', (data) => log(' reconnect_attempt === $data'));
+    socket.on(
+        'reconnect_failed', (data) => log(' reconnect_failed === $data'));
+    socket.on('reconnect_error', (data) => log(' reconnect_error === $data'));
+    socket.on('reconnecting', (data) => log(' reconnecting === $data'));
+    socket.on('ping', (data) => log(' ping === $data'));
+    socket.on('pong', (data) => log(' pong === $data'));
   }
 
   static SocketService initSocket({int idrepartidor = 0}) {

@@ -6,6 +6,7 @@ class LocalStorage {
   static String _token = '';
   static String _user = '';
   static bool _online = true;
+  static String _pedidosAceptados = '';
 
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -46,5 +47,14 @@ class LocalStorage {
   static set online(bool value) {
     _online = value;
     _prefs.setBool('online', value);
+  }
+
+  static String get pedidosAceptados {
+    return _prefs.getString('pedidos-aceptados') ?? _pedidosAceptados;
+  }
+
+  static set pedidosAceptados(String value) {
+    _pedidosAceptados = value;
+    _prefs.setString('pedidos-aceptados', value);
   }
 }
