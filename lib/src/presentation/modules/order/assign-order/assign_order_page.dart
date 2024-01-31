@@ -1,4 +1,4 @@
-import 'package:app_repartidor/src/presentation/modules/order/order_page.dart';
+import 'package:app_repartidor/src/presentation/modules/order/pages.dart';
 import 'package:app_repartidor/src/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
 

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
 import 'package:app_repartidor/src/presentation/widgets/widgets.dart';
 import 'package:app_repartidor/src/presentation/providers/providers.dart';
+import 'package:app_repartidor/src/presentation/providers/order_provider.dart';
 
 class OrderPendingPage extends StatefulWidget {
   const OrderPendingPage({super.key});
@@ -14,17 +15,16 @@ class OrderPendingPage extends StatefulWidget {
 
 class _OrderPendingPageState extends State<OrderPendingPage> {
   void initFunctions() {
-    final orderTempProvider =
-        Provider.of<OrderTempProvider>(context, listen: false);
-    final orderProvider =
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderPendingProvider =
         Provider.of<OrderPendingProvider>(context, listen: false);
 
-    final orderPending = orderTempProvider.orderPending;
+    final orderPending = orderProvider.orderPending;
 
     if (orderPending != null) {
-      orderProvider.initPage(order: orderPending);
-      // orderTempProvider.isShowOrderPending =
-      //     orderPending.pedidoPorAceptar?.pedidos?.isNotEmpty ?? false;// TODO: descomentar
+      orderPendingProvider.initPage(order: orderPending);
+      orderProvider.existOrderPending =
+          orderPending.pedidoPorAceptar?.pedidos?.isNotEmpty ?? false;
     }
   }
 
@@ -42,10 +42,10 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
   @override
   Widget build(BuildContext context) {
     final orderPendingProvider = Provider.of<OrderPendingProvider>(context);
-    final orderTempProvider = Provider.of<OrderTempProvider>(context);
-    final orderProvider = Provider.of<OrderTempProvider>(context).orderPending;
+    final orderTempProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context).orderPending;
 
-    if (!orderTempProvider.isShowOrderPending) {
+    if (!orderTempProvider.existOrderPending) {
       return const ContainerWidget();
     }
 
@@ -124,28 +124,33 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
 
     final orderPendingProvider =
         Provider.of<OrderPendingProvider>(context, listen: false);
+
     final orderTempProvider =
-        Provider.of<OrderTempProvider>(context, listen: false);
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+        Provider.of<OrderProvider>(context, listen: false);
+
+    final orderHeaderProvider = Provider.of<OrderHeaderProvider>(context, listen: false);
 
     final ids = orderPendingProvider.getIdsPedidosNoLocalStorage(listOrders);
 
     if (ids.isEmpty) {
-      // orderTempProvider.isShowOrderPending = false; // TODO: descomentar
       orderTempProvider.orderPending = null;
       await orderPendingProvider.setNullPedidosPorAceptar();
+      orderTempProvider.existOrderPending =
+          false; // TODO: descomentar //TODO: Retroceder
       return;
     }
 
     final listIds = ids.join(',');
 
-    await orderProvider.acceptListOrdersByIdsProvider(ids: listIds);
+    await orderHeaderProvider.acceptListOrdersByIdsProvider(ids: listIds);
 
-    await orderProvider.getListOrdersAcceptedByIdsProvider(ids: listIds);
+    await orderHeaderProvider.getListOrdersAcceptedByIdsProvider(ids: listIds);
 
     //TODO: Falta 1 funcion que junta los ids
 
     // orderTempProvider.isShowOrderPending = false; // TODO: descomentar
+
+    //TODO: Enviar a la lista de pedidos
     orderTempProvider.orderPending = null;
   }
 }

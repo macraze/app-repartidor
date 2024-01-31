@@ -97,11 +97,21 @@ class OrderService {
 
       final data = ordersAcceptedResponseFromJson(response.body);
 
-      final list = data.data ?? [];
+      final List<Order> list = data.data ?? [];
+
+      // Aqui se tiene que leer el Localstorage.pedidosAceptados y aumentarle los valores de list
+      // Luego esa nueva lista se tiene que mapear y el resto es historia
+      String storedOrdersJson = LocalStorage.pedidosAceptados;
+      if (storedOrdersJson.isNotEmpty) {
+        List<Order> storedOrders = orderAcceptedLocalFromJson(storedOrdersJson);
+        list.addAll(storedOrders);
+      }
 
       final List<Order> mappedData = list.map<Order>((order) {
         return cocinarDataPedido(order: order);
       }).toList();
+
+      LocalStorage.pedidosAceptados = orderAcceptedLocalToJson(mappedData);
 
       return mappedData;
     } catch (e) {

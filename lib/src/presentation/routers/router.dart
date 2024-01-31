@@ -1,6 +1,8 @@
 import 'package:app_repartidor/src/data/local/local_storage.dart';
 import 'package:app_repartidor/src/domain/models/models.dart';
-import 'package:app_repartidor/src/presentation/modules/order/order_temp_page.dart';
+import 'package:app_repartidor/src/presentation/modules/order/order-list/order_list_page.dart';
+import 'package:app_repartidor/src/presentation/modules/order/order_page.dart';
+import 'package:app_repartidor/src/presentation/modules/order/pages.dart';
 import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +12,6 @@ import 'package:go_router/go_router.dart';
 import 'package:app_repartidor/src/presentation/modules/auth/auth_page.dart';
 import 'package:app_repartidor/src/presentation/modules/home/home_page.dart';
 import 'package:app_repartidor/src/presentation/providers/providers.dart';
-import 'package:app_repartidor/src/presentation/modules/order/order_page.dart';
 
 mixin RouterMixin on State<MyApp> {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -48,7 +49,7 @@ mixin RouterMixin on State<MyApp> {
           GoRoute(
             path: '/orderTemp',
             name: Routes.orderTemp,
-            builder: (context, state) => const OrderTempPage(),
+            builder: (context, state) => const OrderPage(),
           ),
           GoRoute(
             path: '/ordersPending',
@@ -76,10 +77,22 @@ mixin RouterMixin on State<MyApp> {
                 }
               }),
           GoRoute(
+              path: '/assignOrderByCode',
+              name: Routes.assignOrderByCode,
+              builder: (context, state) {
+                return AssignOrderByCodePage();
+              }),
+          GoRoute(
               path: '/orderDetail',
               name: Routes.orderDetail,
               builder: (context, state) {
                 return const DetailOrderPage();
+              }),
+          GoRoute(
+              path: '/orderList',
+              name: Routes.orderList,
+              builder: (context, state) {
+                return const OrderListPage();
               }),
         ],
         redirect: (context, state) {

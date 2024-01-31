@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:app_repartidor/src/data/local/local_storage.dart';
+import 'package:app_repartidor/src/presentation/routers/index.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
@@ -11,9 +15,15 @@ import 'package:app_repartidor/src/presentation/common/utils/snackbars.dart';
 import 'package:app_repartidor/src/presentation/common/constants/constants.dart';
 import 'package:app_repartidor/src/presentation/common/utils/validators.dart';
 
-class AssignOrderByCodePage extends StatelessWidget {
+class AssignOrderByCodePage extends StatefulWidget {
   AssignOrderByCodePage({super.key});
 
+  @override
+  State<AssignOrderByCodePage> createState() => _AssignOrderByCodePageState();
+}
+
+class _AssignOrderByCodePageState extends State<AssignOrderByCodePage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode _focusUser = FocusNode();
 
   @override
@@ -21,6 +31,12 @@ class AssignOrderByCodePage extends StatelessWidget {
     return Scaffold(
       body: _getBody(context),
     );
+  }
+
+  @override
+  void dispose() {
+    _focusUser.dispose();
+    super.dispose();
   }
 
   Widget _getBody(BuildContext context) {
@@ -72,7 +88,7 @@ class AssignOrderByCodePage extends StatelessWidget {
     }
 
     return Form(
-      key: provider.formKey,
+      key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
         children: [
@@ -93,7 +109,7 @@ class AssignOrderByCodePage extends StatelessWidget {
               validator: Validators.orderCodeValidator,
               focusNode: _focusUser,
               keyboardType: TextInputType.number,
-              onFieldSubmitted: (_) => actionAsignOrder(context),
+              // onFieldSubmitted: (_) => actionAsignOrder(context),
               cursorColor: Colors.black,
               decoration: CustomInputs.inputDecoration(
                   hintText: 'Código',
@@ -113,8 +129,8 @@ class AssignOrderByCodePage extends StatelessWidget {
                 style: CustomTextStyles.fontLabel(
                     fontSize: 15, fontWeight: FontWeight.bold),
                 colorDisabled: AppColors.secondary.withOpacity(0.5),
-                disabled:
-                    !provider.isValidForm() || provider.isLoadingOrderCode,
+                disabled: !(_formKey.currentState?.validate() ?? false) ||
+                    provider.isLoadingOrderCode,
                 loading: provider.isLoadingOrderCode,
               ),
               const SizedBox(width: 10),
@@ -136,6 +152,7 @@ class AssignOrderByCodePage extends StatelessWidget {
                 color: provider.isSuccess ? Colors.green : Colors.red,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
+                maxLines: 3,
               ),
             ),
         ],
@@ -149,39 +166,44 @@ class AssignOrderByCodePage extends StatelessWidget {
 
     User user = UserProvider().user;
 
-    if (!assignOrderByCodeProvider.isValidForm()) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
     FocusScope.of(context).unfocus();
 
-    final String? errorMessage =
-        await assignOrderByCodeProvider.assignOrderProvider(
-            idPedido: int.parse(assignOrderByCodeProvider.orderCode),
-            idRepartidor: user.idrepartidor);
+    final errorMessage = await assignOrderByCodeProvider.assignOrderProvider(
+        idPedido: int.parse(assignOrderByCodeProvider.orderCode),
+        idRepartidor: user.idrepartidor);
 
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    if (errorMessage != null) return;
 
-    final String? errorMeesage2 =
-        await orderProvider.acceptListOrdersByIdsProvider(
-            ids: assignOrderByCodeProvider.orderCode);
+    try {
+      _formKey.currentState?.reset();
 
-    final listOrders = await orderProvider.getListOrdersAcceptedByIdsProvider(
-        ids: assignOrderByCodeProvider.orderCode);
+      final orderProvider =
+          Provider.of<OrderHeaderProvider>(context, listen: false);
 
-    final socketProvider = Provider.of<SocketProvider>(context, listen: false);
+      final errorMessage2 = await orderProvider.acceptListOrdersByIdsProvider(
+          ids: assignOrderByCodeProvider.orderCode);
 
-    LocalStorage.pedidosAceptados = orderAcceptedLocalToJson(listOrders);
+      final listOrders = await orderProvider.getListOrdersAcceptedByIdsProvider(
+          ids: assignOrderByCodeProvider.orderCode);
 
-    socketProvider.cocinarLisPedidosNotificar(listOrders: listOrders);
+      final socketProvider =
+          Provider.of<SocketProvider>(context, listen: false);
 
-    final orderTempProvider =
-        Provider.of<OrderTempProvider>(context, listen: false);
+      LocalStorage.pedidosAceptados = orderAcceptedLocalToJson(listOrders);
 
-    orderTempProvider.isShowCatWaiting = false;
+      socketProvider.cocinarLisPedidosNotificar(listOrders: listOrders);
 
-    // if (errorMessage != null) {
-    //   Snackbars.showSnackbarError(errorMessage);
-    // } else {
-    Snackbars.showSnackbarSuccess('Asignación de pedido correcta.');
-    // }
+      GoRouter.of(context).pushNamed(Routes.orderList);
+
+      if (errorMessage != null) {
+        Snackbars.showSnackbarError(errorMessage);
+      } else {
+        Snackbars.showSnackbarSuccess('Asignación de pedido correcta.');
+      }
+    } catch (e) {
+      log('error');
+    }
   }
 }

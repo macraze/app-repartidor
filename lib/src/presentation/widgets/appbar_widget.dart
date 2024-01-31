@@ -47,7 +47,7 @@ class AppbarWidget extends StatelessWidget {
   }
 
   Column _buildSwitch(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
     String title = orderProvider.switchValue ? 'En línea' : 'Offline';
 
     final User user = userFromJson(LocalStorage.user);
@@ -76,7 +76,7 @@ class AppbarWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        final orderProvider = Provider.of<OrderProvider>(context);
+        final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
         return AlertDialog(
           title: const TextWidget(
@@ -141,7 +141,8 @@ class AppbarWidget extends StatelessWidget {
   }
 
   void handleAlertSwitch(BuildContext context, User user) {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider =
+        Provider.of<OrderHeaderProvider>(context, listen: false);
 
     if (!orderProvider.isValidForm()) return;
 
@@ -152,7 +153,8 @@ class AppbarWidget extends StatelessWidget {
 
   Future handleSwitchChange(
       BuildContext context, bool? value, User user) async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider =
+        Provider.of<OrderHeaderProvider>(context, listen: false);
 
     if (orderProvider.isLoadingOnline) return;
 

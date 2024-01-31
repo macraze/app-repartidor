@@ -13,7 +13,7 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  // GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   String _orderCode = '';
   String get orderCode => _orderCode;
@@ -43,9 +43,9 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isValidForm() {
-    return formKey.currentState?.validate() ?? false;
-  }
+  // bool isValidForm() {
+  //   return formKey.currentState?.validate() ?? false;
+  // }
 
   void updateRptMessage(String message, bool success) {
     responseMessage = message;
@@ -103,7 +103,7 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
 
   String? _handleManyOrders() {
     updateRptMessage(
-        'Ya tienes muchos pedidos!. Entrega lo que tienes primero.', false);
+        'Ya tienes muchos pedidos!.\nEntrega lo que tienes primero.', false);
     return 'Error: Ya tienes muchos pedidos!. Entrega lo que tienes primero.';
   }
 
@@ -128,7 +128,7 @@ class AssignOrderByCodeProvider extends ChangeNotifier {
   }
 
   void clearForm() {
-    formKey.currentState?.reset();
+    // formKey.currentState?.reset();
     orderCode = '';
     notifyListeners();
   }

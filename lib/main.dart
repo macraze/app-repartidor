@@ -21,11 +21,12 @@ class AppState extends StatelessWidget {
   Widget build(BuildContext context) {
     List<SingleChildWidget> providers = [
       ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ChangeNotifierProvider(create: (_) => OrderProvider()),
       ChangeNotifierProvider(create: (_) => SocketProvider(), lazy: false),
-      ChangeNotifierProvider(create: (_) => OrderTempProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderDetailProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderHeaderProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderListProvider(), lazy: false),
       ChangeNotifierProvider(create: (_) => OrderPendingProvider(), lazy: false),
-      ChangeNotifierProvider(create: (_) => OrderPendingProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => OrderProvider(), lazy: false),
       ChangeNotifierProvider(create: (_) => AssignOrderByCodeProvider(), lazy: false),
     ];
 

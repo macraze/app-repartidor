@@ -51,14 +51,14 @@ class _ListOrdersPendingDeliveryLocalPageState
   }
 
   Widget _buildBodyContainer(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     if (!orderProvider.showListOrdersPendingDeliveryLocal) {
       return ButtonWidget(
         text: 'Asignarse pedido',
         onPressed: () async {
           final orderProvider =
-              Provider.of<OrderProvider>(context, listen: false);
+              Provider.of<OrderHeaderProvider>(context, listen: false);
 
           await orderProvider.getListOrdersPendingDeliveryLocalProvider();
 
@@ -114,7 +114,7 @@ class _ListOrdersPendingDeliveryLocalPageState
   }
 
   Widget _buildListOrders(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     if (orderProvider.listOrdersPendingDeliveryLocal.isEmpty) {
       return const ContainerWidget(
@@ -142,7 +142,7 @@ class _ListOrdersPendingDeliveryLocalPageState
   }
 
   Row _buildButtonsActionsOrders(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -176,7 +176,7 @@ class _ListOrdersPendingDeliveryLocalPageState
   }
 
   void _handleAcceptOrders(BuildContext context) async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context, listen: false);
 
     if (orderProvider.selectedOrdersAssignedLocal.isEmpty) {
       return;
@@ -209,7 +209,7 @@ class ItemOrderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderHeaderProvider>(context);
 
     final delivery = jsonOneDatosDeliveryFromJson(order.jsonDatosDelivery!);
 
